@@ -5,7 +5,12 @@ type SocketData = {
 
 const server = Bun.serve<SocketData>({
   fetch: (request, server) => {
-    if (server.upgrade(request)) {
+    const url = new URL(request.url);
+
+    if (url.pathname === "/health") {
+      return new Response("Successfully Connected to Server", { status: 200 });
+    }
+    if (server.upgrade(request, { data: { userId: "test" } })) {
       return;
     }
     return new Response("Upgrade failed", { status: 500 });
